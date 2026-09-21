@@ -158,6 +158,48 @@ classDiagram
 | 문자열 검사가 `VocabAppV1` 안 private 메서드 | 재사용 어려움 | `WordUtils`로 분리 + `model`/`util`/`store`/`app` 패키지 분리 |
 | 파일 2개, 패키지 없음 | 클래스가 늘어나면 한눈에 안 들어옴 | `model`/`util`/`store`/`app` 4개 패키지로 역할 분리 |
 
+### `toString()`이 실제로 동작하는 순서 (트레이싱 예시)
+
+`Word`에는 `getLevelLabel()`이 `"일반"`을 반환하도록 적혀 있는데, 왜 화면에는
+`"초급"`/`"중급"`/`"고급"`이 나올까요? 위 표의 1번째 줄(`getLevelLabel()` 오버라이딩)이
+실제로 호출될 때 무슨 일이 일어나는지, 초급 단어 하나를 추가하는 순간을 따라가
+보겠습니다.
+
+```mermaid
+sequenceDiagram
+    participant App as VocabApp.addWord()
+    participant Word as Word.toString()
+    participant Beginner as BeginnerWord.getLevelLabel()
+
+    App->>App: word = new BeginnerWord(...)  (실제 객체는 BeginnerWord)
+    App->>Word: "저장했습니다: " + word → 자동으로 word.toString() 호출
+    Note over Word: BeginnerWord는 toString()을 오버라이딩하지 않았으므로<br/>부모(Word)의 toString() 코드가 그대로 실행된다
+    Word->>Beginner: getLevelLabel() 호출
+    Note over Beginner: 실제 객체가 BeginnerWord이므로<br/>BeginnerWord가 오버라이딩한 버전이 실행된다
+    Beginner-->>Word: "초급" 반환
+    Word-->>App: "[초급] apple - 사과 (예: ...)" 반환
+```
+
+1. `addWord()`에서 난이도가 1이면 `word = new BeginnerWord(...)`로 **실제 객체는
+   `BeginnerWord`**를 만듭니다. 변수의 선언 타입은 `Word word`지만, 객체 자체는
+   `BeginnerWord`입니다.
+2. `System.out.println("저장했습니다: " + word)`에서 `word`가 문자열과 `+`로
+   합쳐지므로 자바가 자동으로 `word.toString()`을 호출합니다.
+3. `BeginnerWord`는 `toString()`을 오버라이딩하지 않았으므로, 부모인
+   `Word.toString()` 코드가 실행됩니다.
+4. `Word.toString()` 안에서 `getLevelLabel()`을 호출하는 순간, 자바는 **선언
+   타입(`Word`)이 아니라 실제 객체(`BeginnerWord`)를 기준으로** 메서드를 찾습니다.
+   `BeginnerWord`가 `getLevelLabel()`을 오버라이딩했으므로 그 버전이 실행되어
+   `"초급"`을 반환합니다.
+5. `Word.toString()`은 이 값을 받아 `"[초급] apple - 사과 (예: ...)"`를 완성해
+   돌려줍니다.
+
+**핵심**: `Word.toString()` 코드는 하나뿐이지만, 그 안에서 `getLevelLabel()`을
+호출하는 순간 "실제 객체가 무엇이냐"에 따라 다른 메서드가 실행됩니다(3~4번
+단계). 이게 오버라이딩과 다형성이 실제로 동작하는 방식입니다. `word`가
+`IntermediateWord`/`AdvancedWord` 객체였다면 4번 단계에서 각각 그 클래스의
+`getLevelLabel()`이 대신 실행됩니다.
+
 **예외처리는 v1에서 이미 배웠으므로 그대로 씁니다.** 난이도 입력을
 `Integer.parseInt` + `try-catch(NumberFormatException)`로 처리하는 방식은
 v1과 동일합니다 — 그래서 이 부분은 이번에 새로 입력할 대상이 아닙니다 (6번 참고).
