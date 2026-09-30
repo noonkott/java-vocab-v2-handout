@@ -145,7 +145,7 @@ classDiagram
 | 난이도는 `Word`의 `int level` 필드 하나뿐, `toString()`에서 `if/else`로 표시 이름 결정 | 난이도가 늘어날 때마다 `if/else`를 계속 고쳐야 함 | `BeginnerWord`/`IntermediateWord`/`AdvancedWord`가 `getLevelLabel()`을 오버라이딩 → if/else가 다형성으로 대체됨 |
 | `Word[] words = new Word[20]` 고정 배열 | 21번째 단어부터 저장 불가 | `List<Word> words = new ArrayList<>()` → 크기 제한 사라짐 |
 | 삭제 시 뒤 원소를 한 칸씩 손으로 당기는 `for` 루프 | 의도가 코드에 가려짐 | `words.remove(target)` 한 줄로 대체 |
-| `count`를 모든 메서드가 매개변수/반환값으로 주고받음 | 호출하는 쪽이 개수를 계속 챙겨야 함 | `WordBook`이 캡슐화 → 바깥에서 개수를 직접 들고 다닐 필요 없음 |
+| `count`를 모든 메서드가 매개변수/반환값으로 주고받음 | 호출하는 쪽이 개수를 계속 챙겨야 함 | `WordBook`이 캡슐화 → 바깥에서 단어 개수(`count`)를 직접 들고 다닐 필요 없음 |
 | 문자열 검사가 `VocabAppV1` 안 private 메서드 | 재사용 어려움 | `WordUtils`로 분리 + `model`/`util`/`store`/`app` 패키지 분리 |
 | 파일 2개, 패키지 없음 | 클래스가 늘어나면 한눈에 안 들어옴 | `model`/`util`/`store`/`app` 4개 패키지로 역할 분리 |
 
