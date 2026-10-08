@@ -1,20 +1,20 @@
 # 단어장 v2 — 구조 해설 & 코드 입력 자료
+<style>
+:not(pre) > code {
+    color: #000 !important;
+}
+</style>
 
-이 자료는 **강의 6~9주차**(5장 상속·다형성·인터페이스 / 6장 모듈과 패키지 /
-7장 제네릭·컬렉션)에 맞춘 콘솔 단어장 v2의 구조를 먼저 설명하고, 뒤에 전체
-코드를 실어 학생이 직접 타이핑하며 연습할 수 있도록 만들었습니다.
 
-v1과 달리 **이번에는 코드를 전부 입력하지 않습니다.** 이번 단원에서 새로
-배우는 개념(상속·오버라이딩, 컬렉션, 패키지)이 드러나는 부분만 직접 입력하고,
-나머지(이미 v1에서 써본 로직)는 미리 채워진 스켈레톤을 그대로 씁니다. 어디를
-입력해야 하는지는 7번 섹션에서 `+` 표시(초록색)로 안내합니다.
+이 자료는 **5장 상속·다형성·인터페이스 / 6장 모듈과 패키지 / 7장 제네릭·컬렉션** 수업범위의 콘솔 단어장 v2 구조 및 코드 설명자료 입니다.
+
+이번 단원에서 새로 배우는 개념(**상속·오버라이딩, 컬렉션, 패키지**)에 대해서 코드를 직접 입력하셔서 완성하십시오. (+초록색)
 
 ---
 
-## 1. 무엇을 만드는가
+## 1. 만드는 것
 
-v1과 **기능은 동일**합니다. 메뉴 번호를 입력하면 단어를 **추가·조회·검색·삭제**할
-수 있고, 등록한 단어는 프로그램을 종료하면 사라집니다.
+v1과 기능은 동일합니다. **메뉴 번호를 입력하면 단어를 추가·조회·검색·삭제**할 수 있고, 등록한 단어는 프로그램을 종료하면 사라집니다.
 
 ```
 1. 단어 추가       2. 전체 목록 (알파벳순)
@@ -22,10 +22,10 @@ v1과 **기능은 동일**합니다. 메뉴 번호를 입력하면 단어를 **�
 0. 종료
 ```
 
-## 2. 코드 구조 — 왜 파일이 7개로 늘었나
+## 2. 코드 구조 — 파일이 7개로 늘어남
 
 v1은 파일 2개(`Word.java`, `VocabAppV1.java`)였지만, v2는 상속·컬렉션·패키지를
-배우면서 역할별로 파일과 패키지를 나눕니다.
+배우면서 역할별로 파일과 패키지를 나눕니다.P
 
 ```
 com.example.vocabv2
@@ -219,7 +219,7 @@ v1과 동일합니다 — 그래서 이 부분은 이번에 새로 입력할 대
 | 멤버 | 설명 |
 |---|---|
 | `normalize(raw)` | 공백 제거 + 소문자 통일. `null`은 빈 문자열로 취급 |
-| `isBlank(value)` | `null`이거나 공백뿐인지 확인 |
+| `isBlank(value)` | `null`이거나 공백만 있는 문자열인지 확인 |
 
 ### `store.WordBook` — 컬렉션으로 단어 관리
 
@@ -601,15 +601,15 @@ public class VocabApp {
             level = 1;
         }
 
-+        // 선택한 난이도에 따라 서로 다른 자식 클래스의 객체를 만든다 (다형성의 시작점).
-+        Word word;
-+        if (level == 2) {
-+            word = new IntermediateWord(englishWord, meaning, example);
-+        } else if (level == 3) {
-+            word = new AdvancedWord(englishWord, meaning, example);
-+        } else {
-+            word = new BeginnerWord(englishWord, meaning, example);
-+        }
+        // 선택한 난이도에 따라 서로 다른 자식 클래스의 객체를 만든다 (다형성의 시작점).
+        Word word;
+        if (level == 2) {
+            word = new IntermediateWord(englishWord, meaning, example);
+        } else if (level == 3) {
+            word = new AdvancedWord(englishWord, meaning, example);
+        } else {
+            word = new BeginnerWord(englishWord, meaning, example);
+        }
 
         boolean added = wordBook.add(word);
         System.out.println(added ? "저장했습니다: " + word : "이미 등록된 단어입니다.");
@@ -975,341 +975,6 @@ public class VocabApp {
         wordBook.add(new BeginnerWord("book", "책", "This book is interesting."));
         wordBook.add(new IntermediateWord("achieve", "성취하다", "She achieved her goal."));
         wordBook.add(new AdvancedWord("ambiguous", "애매한", "The instructions were ambiguous."));
-    }
-}
-```
-
-<div style="page-break-after: always;"></div>
-
-## 부록 — 주석 포함 버전 (참고용)
-
-앞의 두 부록(색 표시 버전, 전체 코드 버전)과 기능은 완전히 같고, 각 줄 오른쪽에
-동작을 설명하는 주석만 추가된 버전입니다. 입력하다가 막히면 참고하세요.
-
-### model/Word.java (주석 포함)
-
-```java
-package com.example.vocabv2.model; // model 패키지에 속한다고 선언한다.
-
-import com.example.vocabv2.util.WordUtils; // util 패키지의 WordUtils를 가져와 쓴다.
-
-public class Word { // 단어 하나를 표현하는 부모 클래스를 선언한다.
-
-    private final String englishWord; // 생성 후 바뀌지 않는 영어 단어를 저장한다.
-    private final String meaning; // 생성 후 바뀌지 않는 뜻을 저장한다.
-    private final String example; // 생성 후 바뀌지 않는 예문을 저장한다.
-
-    public Word(String englishWord, String meaning, String example) { // 세 가지 정보로 Word 객체를 만든다.
-        this.englishWord = WordUtils.normalize(englishWord); // 공백 제거 + 소문자 변환은 WordUtils에 맡긴다.
-        this.meaning = meaning == null ? "" : meaning.trim(); // null은 빈 문자열로, 나머지는 공백만 제거해 저장한다.
-        this.example = example == null ? "" : example.trim(); // null은 빈 문자열로, 나머지는 공백만 제거해 저장한다.
-    }
-
-    public String getEnglishWord() { // 저장된 영어 단어를 반환한다.
-        return englishWord; // englishWord 필드 값을 호출한 곳에 돌려준다.
-    }
-
-    public String getMeaning() { // 저장된 뜻을 반환한다.
-        return meaning; // meaning 필드 값을 호출한 곳에 돌려준다.
-    }
-
-    public String getExample() { // 저장된 예문을 반환한다.
-        return example; // example 필드 값을 호출한 곳에 돌려준다.
-    }
-
-    public String getLevelLabel() { // 화면에 보여줄 난이도 이름을 반환한다 — 자식 클래스가 오버라이딩할 대상이다.
-        return "일반"; // 자식 클래스가 따로 정의하지 않았을 때의 기본값이다.
-    }
-
-    @Override // Object의 toString()을 재정의한다는 표시다.
-    public String toString() { // Word 객체를 문자열로 표시할 형식을 만든다.
-        String base = "[" + getLevelLabel() + "] " + englishWord + " - " + meaning; // getLevelLabel()은 실제 객체(자식 클래스)의 버전이 호출된다 — 다형성.
-        if (!example.isEmpty()) { // 예문이 있는지 확인한다.
-            return base + " (예: " + example + ")"; // 기본 문자열 뒤에 예문을 붙여 반환한다.
-        }
-        return base; // 예문이 없으면 기본 문자열만 반환한다.
-    }
-}
-```
-
-<div style="page-break-after: always;"></div>
-
-### model/BeginnerWord.java / IntermediateWord.java / AdvancedWord.java (주석 포함)
-
-```java
-package com.example.vocabv2.model; // model 패키지에 속한다고 선언한다.
-
-public class BeginnerWord extends Word { // Word를 상속받아 초급 단어를 표현한다.
-
-    public BeginnerWord(String englishWord, String meaning, String example) { // 세 가지 정보를 받아 객체를 만든다.
-        super(englishWord, meaning, example); // 공통 필드 저장은 부모(Word) 생성자에게 맡긴다.
-    }
-
-    @Override // 부모의 getLevelLabel()을 다시 정의한다는 표시다.
-    public String getLevelLabel() { // 이 클래스만의 표시 이름을 정한다.
-        return "초급"; // 초급 단어의 표시 이름을 반환한다.
-    }
-}
-```
-
-```java
-package com.example.vocabv2.model; // model 패키지에 속한다고 선언한다.
-
-public class IntermediateWord extends Word { // Word를 상속받아 중급 단어를 표현한다.
-
-    public IntermediateWord(String englishWord, String meaning, String example) { // 세 가지 정보를 받아 객체를 만든다.
-        super(englishWord, meaning, example); // 공통 필드 저장은 부모(Word) 생성자에게 맡긴다.
-    }
-
-    @Override // 부모의 getLevelLabel()을 다시 정의한다는 표시다.
-    public String getLevelLabel() { // 이 클래스만의 표시 이름을 정한다.
-        return "중급"; // 중급 단어의 표시 이름을 반환한다.
-    }
-}
-```
-
-```java
-package com.example.vocabv2.model; // model 패키지에 속한다고 선언한다.
-
-public class AdvancedWord extends Word { // Word를 상속받아 고급 단어를 표현한다.
-
-    public AdvancedWord(String englishWord, String meaning, String example) { // 세 가지 정보를 받아 객체를 만든다.
-        super(englishWord, meaning, example); // 공통 필드 저장은 부모(Word) 생성자에게 맡긴다.
-    }
-
-    @Override // 부모의 getLevelLabel()을 다시 정의한다는 표시다.
-    public String getLevelLabel() { // 이 클래스만의 표시 이름을 정한다.
-        return "고급"; // 고급 단어의 표시 이름을 반환한다.
-    }
-}
-```
-
-<div style="page-break-after: always;"></div>
-
-### util/WordUtils.java (주석 포함)
-
-```java
-package com.example.vocabv2.util; // util 패키지에 속한다고 선언한다.
-
-public final class WordUtils { // 더 이상 상속할 수 없는(final) 유틸리티 클래스를 선언한다.
-
-    private WordUtils() { // 생성자를 private으로 막아 객체를 못 만들게 한다.
-    }
-
-    public static String normalize(String raw) { // 문자열을 비교하기 좋은 형태로 통일한다.
-        if (raw == null) { // 입력이 null인지 확인한다.
-            return ""; // null이면 빈 문자열로 취급한다.
-        }
-        return raw.trim().toLowerCase(); // 공백을 제거하고 소문자로 바꿔 반환한다.
-    }
-
-    public static boolean isBlank(String value) { // 문자열이 없거나 공백뿐인지 확인한다.
-        return value == null || value.trim().isEmpty(); // null이거나 공백 제거 후 빈 문자열이면 true를 반환한다.
-    }
-}
-```
-
-<div style="page-break-after: always;"></div>
-
-### store/WordBook.java (주석 포함)
-
-```java
-package com.example.vocabv2.store; // store 패키지에 속한다고 선언한다.
-
-import com.example.vocabv2.model.Word; // model 패키지의 Word를 가져와 쓴다.
-import com.example.vocabv2.util.WordUtils; // util 패키지의 WordUtils를 가져와 쓴다.
-
-import java.util.ArrayList; // JDK가 제공하는 List 구현체를 가져와 쓴다.
-import java.util.List; // 컬렉션의 공통 인터페이스 타입을 가져와 쓴다.
-
-public class WordBook { // 단어들을 모아서 관리하는 클래스를 선언한다.
-
-    private final List<Word> words = new ArrayList<>(); // Word를 담는 리스트. 크기를 미리 정하지 않아도 된다.
-
-    public boolean add(Word word) { // 단어 하나를 추가하고 성공 여부를 반환한다.
-        if (find(word.getEnglishWord()) != null) { // 같은 영어 단어가 이미 있는지 찾는다.
-            return false; // 이미 있으면 추가하지 않고 실패를 알린다.
-        }
-        words.add(word); // 리스트 끝에 단어를 추가한다 — 배열처럼 인덱스를 직접 계산할 필요가 없다.
-        return true; // 추가에 성공했음을 알린다.
-    }
-
-    public Word find(String englishWord) { // 영어 단어로 저장된 Word를 찾는다.
-        String key = WordUtils.normalize(englishWord); // 검색어를 저장 형식과 같게 정리한다.
-        for (Word w : words) { // 리스트에 담긴 단어를 처음부터 끝까지 확인한다(향상된 for문).
-            if (w.getEnglishWord().equals(key)) { // 현재 단어가 검색어와 일치하는지 확인한다.
-                return w; // 일치하는 단어를 즉시 반환한다.
-            }
-        }
-        return null; // 끝까지 찾지 못했으면 null을 반환한다.
-    }
-
-    public boolean remove(String englishWord) { // 영어 단어로 저장된 Word를 삭제한다.
-        Word target = find(englishWord); // 삭제할 대상을 먼저 찾는다.
-        if (target == null) { // 찾지 못했는지 확인한다.
-            return false; // 삭제할 대상이 없으면 실패를 알린다.
-        }
-        return words.remove(target); // 리스트가 알아서 대상을 지우고 뒤 원소를 당겨준다 — 직접 for문을 돌릴 필요가 없다.
-    }
-
-    public List<Word> all() { // 저장된 단어 전체 리스트를 반환한다.
-        return words; // words 리스트 자체를 그대로 돌려준다.
-    }
-
-    public int size() { // 현재 저장된 단어 개수를 반환한다.
-        return words.size(); // List가 이미 알고 있는 개수를 그대로 돌려준다 — count 변수가 필요 없다.
-    }
-
-    public void sortByAlphabet() { // 선택 정렬로 영단어 알파벳순 정렬한다.
-        for (int i = 0; i < words.size() - 1; i++) { // 정렬할 앞쪽 위치를 하나씩 선택한다.
-            int minIndex = i; // 가장 앞선 단어의 위치를 현재 위치로 시작한다.
-            for (int j = i + 1; j < words.size(); j++) { // 현재 위치 뒤의 단어들을 비교한다.
-                if (words.get(j).getEnglishWord().compareTo(words.get(minIndex).getEnglishWord()) < 0) { // 더 앞선 단어인지 확인한다.
-                    minIndex = j; // 더 앞선 단어의 위치를 기억한다.
-                }
-            }
-            if (minIndex != i) { // 가장 앞선 단어가 현재 위치와 다른지 확인한다.
-                Word temp = words.get(i); // 현재 위치의 단어를 임시로 보관한다.
-                words.set(i, words.get(minIndex)); // 가장 앞선 단어를 현재 위치로 옮긴다.
-                words.set(minIndex, temp); // 보관한 단어를 원래 가장 앞선 위치로 옮긴다.
-            }
-        }
-    }
-}
-```
-
-<div style="page-break-after: always;"></div>
-
-### app/VocabApp.java (주석 포함)
-
-```java
-package com.example.vocabv2.app; // app 패키지에 속한다고 선언한다.
-
-import com.example.vocabv2.model.AdvancedWord; // 고급 단어 클래스를 가져와 쓴다.
-import com.example.vocabv2.model.BeginnerWord; // 초급 단어 클래스를 가져와 쓴다.
-import com.example.vocabv2.model.IntermediateWord; // 중급 단어 클래스를 가져와 쓴다.
-import com.example.vocabv2.model.Word; // 부모 클래스 Word를 가져와 쓴다.
-import com.example.vocabv2.store.WordBook; // 단어 저장소 클래스를 가져와 쓴다.
-import com.example.vocabv2.util.WordUtils; // 문자열 검사 유틸리티를 가져와 쓴다.
-
-import java.util.List; // 리스트 타입을 가져와 쓴다.
-import java.util.Scanner; // 키보드 입력을 읽는 클래스를 가져와 쓴다.
-
-public class VocabApp { // 프로그램 시작점과 메뉴 로직을 담은 클래스를 선언한다.
-
-    public static void main(String[] args) { // 프로그램이 시작되는 메서드다.
-        Scanner scanner = new Scanner(System.in); // 키보드 입력을 읽을 Scanner를 만든다.
-        WordBook wordBook = new WordBook(); // 단어를 저장할 WordBook을 만든다.
-        seedSampleWords(wordBook); // 빈 화면으로 시작하지 않도록 예시 단어를 미리 넣어둔다.
-
-        boolean running = true; // 메뉴 반복을 계속할지 나타내는 값이다.
-        while (running) { // running이 true인 동안 메뉴를 반복한다.
-            printMenu(); // 사용자에게 메뉴를 출력한다.
-            System.out.print("선택: "); // 메뉴 번호 입력을 안내한다.
-            String choice = scanner.nextLine(); // 입력한 메뉴 번호를 문자열로 읽는다.
-
-            switch (choice) { // 입력한 메뉴 번호에 맞는 기능을 실행한다.
-                case "1": // 단어 추가 메뉴를 선택한 경우
-                    addWord(scanner, wordBook); // 단어를 추가한다.
-                    break; // switch문을 끝낸다.
-                case "2": // 전체 목록 메뉴를 선택한 경우
-                    listAll(wordBook); // 저장된 단어를 모두 출력한다.
-                    break; // switch문을 끝낸다.
-                case "3": // 단어 검색 메뉴를 선택한 경우
-                    searchWord(scanner, wordBook); // 입력한 단어를 검색한다.
-                    break; // switch문을 끝낸다.
-                case "4": // 단어 삭제 메뉴를 선택한 경우
-                    deleteWord(scanner, wordBook); // 단어를 삭제한다.
-                    break; // switch문을 끝낸다.
-                case "0": // 종료 메뉴를 선택한 경우
-                    running = false; // while 반복을 끝내도록 값을 바꾼다.
-                    break; // switch문을 끝낸다.
-                default: // 정의되지 않은 메뉴 번호를 입력한 경우
-                    System.out.println("잘못된 입력입니다. 메뉴 번호를 다시 선택하세요."); // 오류 메시지를 출력한다.
-            }
-        }
-
-        System.out.println("프로그램을 종료합니다. (등록된 단어 " + wordBook.size() + "개는 저장되지 않습니다)"); // 종료 안내를 출력한다.
-        scanner.close(); // Scanner가 사용한 입력 자원을 닫는다.
-    }
-
-    private static void printMenu() { // 프로그램에서 선택할 수 있는 메뉴를 출력한다.
-        System.out.println(); // 메뉴 앞에 빈 줄을 출력한다.
-        System.out.println("===== 미니 단어장 (v2) ====="); // 프로그램 제목을 출력한다.
-        System.out.println("1. 단어 추가"); // 첫 번째 메뉴를 출력한다.
-        System.out.println("2. 전체 목록 (알파벳순)"); // 두 번째 메뉴를 출력한다.
-        System.out.println("3. 단어 검색"); // 세 번째 메뉴를 출력한다.
-        System.out.println("4. 단어 삭제"); // 네 번째 메뉴를 출력한다.
-        System.out.println("0. 종료"); // 종료 메뉴를 출력한다.
-    }
-
-    private static void addWord(Scanner scanner, WordBook wordBook) { // 새 단어를 입력받아 WordBook에 추가한다.
-        System.out.print("영어 단어: "); // 영어 단어 입력을 안내한다.
-        String englishWord = scanner.nextLine(); // 입력한 영어 단어를 읽는다.
-        if (WordUtils.isBlank(englishWord)) { // 공백만 입력했거나 입력하지 않았는지 확인한다.
-            System.out.println("단어를 입력하지 않아 취소합니다."); // 취소 이유를 출력한다.
-            return; // 더 진행하지 않고 메서드를 끝낸다.
-        }
-        System.out.print("뜻: "); // 단어 뜻 입력을 안내한다.
-        String meaning = scanner.nextLine(); // 입력한 뜻을 읽는다.
-        System.out.print("예문 (없으면 그냥 엔터): "); // 예문 입력을 안내한다.
-        String example = scanner.nextLine(); // 입력한 예문을 읽는다.
-
-        System.out.println("난이도를 선택하세요. 1) 초급  2) 중급  3) 고급"); // 선택 가능한 난이도를 보여준다.
-        System.out.print("선택: "); // 난이도 번호 입력을 안내한다.
-        String levelChoice = scanner.nextLine(); // 입력한 난이도를 문자열로 읽는다.
-
-        int level; // 문자열로 받은 난이도를 숫자로 저장할 변수를 선언한다.
-        try { // 숫자가 아닌 입력에서 발생할 예외를 처리한다.
-            level = Integer.parseInt(levelChoice); // 난이도 문자열을 int로 변환한다.
-        } catch (NumberFormatException e) { // 숫자로 변환할 수 없는 입력을 잡는다.
-            level = 1; // 숫자가 아니면 초급으로 정해 계속 진행한다.
-        }
-
-        Word word; // 어떤 자식 클래스의 객체가 될지는 아래에서 정해진다 — 선언한 타입은 부모(Word)다.
-        if (level == 2) { // 난이도가 중급인지 확인한다.
-            word = new IntermediateWord(englishWord, meaning, example); // 중급 단어 객체를 만든다.
-        } else if (level == 3) { // 난이도가 고급인지 확인한다.
-            word = new AdvancedWord(englishWord, meaning, example); // 고급 단어 객체를 만든다.
-        } else { // 그 외(1 또는 잘못된 입력)의 경우
-            word = new BeginnerWord(englishWord, meaning, example); // 초급 단어 객체를 만든다.
-        }
-
-        boolean added = wordBook.add(word); // WordBook에 추가를 시도한다.
-        System.out.println(added ? "저장했습니다: " + word : "이미 등록된 단어입니다."); // 결과에 따라 다른 메시지를 출력한다.
-    }
-
-    private static void listAll(WordBook wordBook) { // 등록된 단어를 알파벳순으로 모두 출력한다.
-        if (wordBook.size() == 0) { // 저장된 단어가 하나도 없는지 확인한다.
-            System.out.println("등록된 단어가 없습니다."); // 빈 목록 안내를 출력한다.
-            return; // 출력할 내용이 없으므로 메서드를 끝낸다.
-        }
-        wordBook.sortByAlphabet(); // 출력하기 전에 알파벳순으로 정렬한다.
-        List<Word> all = wordBook.all(); // 정렬된 전체 리스트를 받아온다.
-        for (int i = 0; i < all.size(); i++) { // 첫 단어부터 마지막 단어까지 반복한다.
-            System.out.println((i + 1) + ". " + all.get(i)); // 번호와 단어 정보(toString)를 한 줄씩 출력한다.
-        }
-    }
-
-    private static void searchWord(Scanner scanner, WordBook wordBook) { // 영어 단어로 단어를 찾는다.
-        System.out.print("검색할 단어: "); // 검색어 입력을 안내한다.
-        String key = scanner.nextLine(); // 입력한 검색어를 읽는다.
-        Word found = wordBook.find(key); // WordBook에서 검색어와 일치하는 단어를 찾는다.
-        System.out.println(found != null ? found.toString() : "등록되지 않은 단어입니다."); // 찾은 단어 또는 실패 메시지를 출력한다.
-    }
-
-    private static void deleteWord(Scanner scanner, WordBook wordBook) { // 지정한 단어를 삭제한다.
-        System.out.print("삭제할 단어: "); // 삭제할 단어 입력을 안내한다.
-        String key = scanner.nextLine(); // 입력한 단어를 읽는다.
-        boolean removed = wordBook.remove(key); // WordBook에서 삭제를 시도한다.
-        System.out.println(removed ? "삭제했습니다." : "등록되지 않은 단어입니다."); // 결과에 따라 다른 메시지를 출력한다.
-    }
-
-    private static void seedSampleWords(WordBook wordBook) { // 시작할 때 보여 줄 예시 단어를 WordBook에 채운다.
-        wordBook.add(new BeginnerWord("apple", "사과", "I eat an apple every day.")); // 초급 예시 단어를 추가한다.
-        wordBook.add(new BeginnerWord("book", "책", "This book is interesting.")); // 초급 예시 단어를 추가한다.
-        wordBook.add(new IntermediateWord("achieve", "성취하다", "She achieved her goal.")); // 중급 예시 단어를 추가한다.
-        wordBook.add(new AdvancedWord("ambiguous", "애매한", "The instructions were ambiguous.")); // 고급 예시 단어를 추가한다.
     }
 }
 ```
